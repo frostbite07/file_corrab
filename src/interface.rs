@@ -46,7 +46,7 @@ pub fn read_files(args: Vec<String>) -> Result<Vec<PathBuf>, Box<dyn Error>> {
     )
 }
 
-fn loop_through_dir(
+pub fn loop_through_dir(
     dir_path: &PathBuf,
     extension_type: &str,
 ) -> Result<Vec<PathBuf>, Box<dyn Error>> {
