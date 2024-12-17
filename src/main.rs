@@ -13,6 +13,9 @@
 
 
 mod interface;
+mod matcher;
+mod templates;
+
 use crate::interface::read_files;
 
 /// Init point for the program
