@@ -19,9 +19,9 @@ impl Display for ArgumentError {
 impl Error for ArgumentError {}
 
 /// Parses passed args and reads files accordingly.
-/// Function will return a vector of all the files in the
-/// directory and all subdirectories with required extension
-pub fn read_files(args: Vec<String>) -> Result<Vec<PathBuf>, Box<dyn Error>> {
+/// Function will return a Path to the required
+/// directory and the extension requested
+pub fn parse_args(args: Vec<String>) -> Result<(PathBuf, String), Box<dyn Error>> {
     let dir_path = match args.get(1) {
         None => {
             println!("usage requires at least target dir: file_corrab dir ext");
@@ -37,16 +37,14 @@ pub fn read_files(args: Vec<String>) -> Result<Vec<PathBuf>, Box<dyn Error>> {
             }
         }
     };
-    loop_through_dir(
-        &dir_path,
-        match args.get(2) {
-            None => "*",
-            Some(dir) => dir,
-        },
-    )
+    let ext = match args.get(2) {
+        None => String::from("*"),
+        Some(dir) => dir.to_owned(),
+    };
+    Ok((dir_path, ext))
 }
 
-pub fn loop_through_dir(
+pub fn read_dir_files(
     dir_path: &PathBuf,
     extension_type: &str,
 ) -> Result<Vec<PathBuf>, Box<dyn Error>> {
@@ -59,7 +57,7 @@ pub fn loop_through_dir(
             }
             let path = entry.path();
             if path.is_dir() {
-                let sub_files = loop_through_dir(&path, &extension_type);
+                let sub_files = read_dir_files(&path, &extension_type);
                 if sub_files.is_ok() {
                     app_files.append(&mut sub_files?);
                 }

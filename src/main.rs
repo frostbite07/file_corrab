@@ -11,12 +11,13 @@
 //! First argument is mandatory and provides the path.
 //! Leaving out the second argument will check all files in dir.
 
-
 mod interface;
 mod matcher;
 mod templates;
 
-use crate::interface::read_files;
+use crate::interface::{parse_args, read_dir_files};
+use crate::matcher::check_file;
+use crate::templates::get_templates;
 
 /// Init point for the program
 ///
@@ -24,7 +25,13 @@ use crate::interface::read_files;
 /// When faced with non-unicode strings and unexpected argument structure
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let files_to_corrab = read_files(std::env::args().collect())?;
-    println!("{:?}", files_to_corrab);
+    let (dir_path, ext) = parse_args(std::env::args().collect())?;
+    let templates = get_templates(&ext).expect("no templates found in /cfg");
+    let subjects = read_dir_files(&dir_path, &ext).expect("no target files matching extension");
+    for sub in subjects {
+        for temp in templates.iter() {
+            check_file(temp, &sub);
+        }
+    }
     Ok(())
 }

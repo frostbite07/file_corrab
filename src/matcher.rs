@@ -2,11 +2,11 @@ use crate::templates::{Template, TemplateType};
 use regex::Regex;
 use rev_buf_reader::RevBufReader;
 use std::fs::File;
-use std::io::{BufRead, BufReader,  Result};
+use std::io::{BufRead, BufReader, Result};
 use std::path::{Path, PathBuf};
 
 /// Matches a file template with the passed challenge file
-pub fn check_file(template: Template, subject: PathBuf) {
+pub fn check_file(template: &Template, subject: &PathBuf) {
     let temp_file = read_lines(template.get_path());
     let sub_file = read_lines(subject);
     match template.get_kind() {
@@ -37,14 +37,16 @@ where
     }
 }
 
-fn match_lines<T: Iterator<Item = Result<String>>>(template: T, mut sub: T) -> Vec<Option<String>> {
+fn match_lines<T: Iterator<Item=Result<String>>>(template: T, mut sub: T) -> Vec<Option<String>> {
     let mut result: Vec<Option<String>> = Vec::new();
     let mut lc: u32 = 1;
     for line in template {
         let sub_line = sub.next().unwrap().unwrap();
         if let Ok(ln) = line {
             if !Regex::new(&ln).unwrap().is_match(&sub_line) {
-                result.push(Some(format!("Ln {}: {} mismatch {}", lc, ln, sub_line)));
+                let warn = format!("Ln {}: {} mismatch {}", lc, ln, sub_line);
+                println!("{}", warn);
+                result.push(Some(warn));
             } else {
                 result.push(None);
             }
@@ -66,8 +68,8 @@ mod tests {
                 vec![Ok(String::from(r"Hello (?<name>\w+)!"))].into_iter(),
                 sub.into_iter()
             )
-            .get(0)
-            .unwrap(),
+                .get(0)
+                .unwrap(),
             &None
         );
 

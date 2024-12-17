@@ -1,4 +1,4 @@
-use crate::interface::loop_through_dir;
+use crate::interface::read_dir_files;
 use std::error::Error;
 use std::path::PathBuf;
 
@@ -27,7 +27,7 @@ impl Template {
 /// Extracts template file info from cfg directory found next to the executable
 pub fn get_templates (extension_type: &str) -> Result<Vec<Template>, Box<dyn Error>> {
     let cfg_path : PathBuf = PathBuf::from("cfg");
-    let cfg_files= loop_through_dir(&cfg_path, extension_type)?;
+    let cfg_files= read_dir_files(&cfg_path, extension_type)?;
     let mut templates : Vec<Template> = Vec::new();
     for entry in cfg_files {
         let name : &str = entry.file_name().unwrap().to_str().unwrap();
