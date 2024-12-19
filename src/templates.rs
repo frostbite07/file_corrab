@@ -30,7 +30,11 @@ pub fn get_templates(extension_type: &str) -> Result<Vec<Template>, Box<dyn Erro
     let cfg_files = read_dir_files(&cfg_path, extension_type, false)?;
     let mut templates: Vec<Template> = Vec::new();
     for entry in cfg_files {
-        let name: &str = entry.file_name().unwrap().to_str().unwrap();
+        let name: &str = entry
+            .file_name()
+            .expect("file name could not be parsed")
+            .to_str()
+            .unwrap();
         if name.starts_with("header") {
             templates.push(Template {
                 kind: TemplateType::Header,

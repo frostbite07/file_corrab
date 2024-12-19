@@ -40,9 +40,15 @@ where
 fn match_lines<T: Iterator<Item = Result<String>>>(template: T, mut sub: T) -> Vec<String> {
     let mut result: Vec<String> = Vec::new();
     for line in template {
-        let sub_line = sub.next().unwrap().unwrap();
+        let sub_line = match sub.next() {
+            None => break,
+            Some(str) => str.expect("file access revoked mid read"),
+        };
         if let Ok(ln) = line {
-            if !Regex::new(&ln).unwrap().is_match(&sub_line) {
+            if !Regex::new(&ln)
+                .expect(format!("not a valid regex {}", ln).as_str())
+                .is_match(&sub_line)
+            {
                 result.push(format!("Mismatch: {} | {}", ln, sub_line));
             }
         }

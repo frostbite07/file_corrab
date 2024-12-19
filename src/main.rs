@@ -35,7 +35,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             problems.append(&mut check_file(temp, &sub));
         }
         if problems.len() > 0 {
-            println!("{}", sub.as_os_str().to_str().unwrap());
+            println!(
+                "{}",
+                sub.as_os_str()
+                    .to_str()
+                    .expect("file name could not be parsed")
+            );
             for warn in problems {
                 println!("{}", warn);
             }

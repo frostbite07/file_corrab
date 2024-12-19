@@ -67,7 +67,12 @@ pub fn read_dir_files(
                 if sub_files.is_ok() {
                     app_files.append(&mut sub_files?);
                 }
-            } else if extension_type.eq("*") || path.to_str().unwrap().ends_with(extension_type) {
+            } else if extension_type.eq("*")
+                || path
+                    .to_str()
+                    .expect("filepath could not be parsed")
+                    .ends_with(extension_type)
+            {
                 app_files.push(path);
             }
         }
