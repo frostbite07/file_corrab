@@ -29,8 +29,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let templates = get_templates(&ext).expect("no templates found in /cfg");
     let subjects = read_dir_files(&dir_path, &ext).expect("no target files matching extension");
     for sub in subjects {
+        let mut problems: Vec<String> = Vec::new();
         for temp in templates.iter() {
-            check_file(temp, &sub);
+            problems.append(&mut check_file(temp, &sub));
+        }
+        if problems.len() > 0 {
+            println!("{}", sub.as_os_str().to_str().unwrap());
+            for warn in problems {
+                println!("{}", warn);
+            }
+            println!();
         }
     }
     Ok(())
