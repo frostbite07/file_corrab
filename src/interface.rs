@@ -21,7 +21,7 @@ impl Error for ArgumentError {}
 /// Parses passed args and reads files accordingly.
 /// Function will return a Path to the required
 /// directory and the extension requested
-pub fn parse_args(args: Vec<String>) -> Result<(PathBuf, String), Box<dyn Error>> {
+pub fn parse_args(args: Vec<String>) -> Result<(PathBuf, String, bool), Box<dyn Error>> {
     let dir_path = match args.get(1) {
         None => {
             println!("usage requires at least target dir: file_corrab dir ext");
@@ -41,12 +41,19 @@ pub fn parse_args(args: Vec<String>) -> Result<(PathBuf, String), Box<dyn Error>
         None => String::from("*"),
         Some(dir) => dir.to_owned(),
     };
-    Ok((dir_path, ext))
+    let recurse = match args.get(3) {
+        None => true,
+        Some(dir) => !dir.eq("norecurse")
+    };
+    Ok((dir_path, ext, recurse))
 }
 
+
+/// Returns all file paths in the passed directory with the required extension type
 pub fn read_dir_files(
     dir_path: &PathBuf,
     extension_type: &str,
+    recurse: bool
 ) -> Result<Vec<PathBuf>, Box<dyn Error>> {
     let mut app_files = vec![];
     for entry in fs::read_dir(dir_path)? {
@@ -56,8 +63,8 @@ pub fn read_dir_files(
                 continue;
             }
             let path = entry.path();
-            if path.is_dir() {
-                let sub_files = read_dir_files(&path, &extension_type);
+            if path.is_dir() && recurse {
+                let sub_files = read_dir_files(&path, &extension_type, true);
                 if sub_files.is_ok() {
                     app_files.append(&mut sub_files?);
                 }

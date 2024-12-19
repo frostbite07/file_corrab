@@ -2,7 +2,7 @@
 //! - have required header lines
 //! - have required footer
 //! - end without trailing spaces
-//!
+//! ```file_corrab <dir> <ext> <?norecurse>```
 //! # Example
 //! To check files in the bin directory with extension ps1, run:
 //!
@@ -25,9 +25,9 @@ use crate::templates::get_templates;
 /// When faced with non-unicode strings and unexpected argument structure
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let (dir_path, ext) = parse_args(std::env::args().collect())?;
+    let (dir_path, ext, recurse) = parse_args(std::env::args().collect())?;
     let templates = get_templates(&ext).expect("no templates found in /cfg");
-    let subjects = read_dir_files(&dir_path, &ext).expect("no target files matching extension");
+    let subjects = read_dir_files(&dir_path, &ext, recurse).expect("no target files matching extension");
     for sub in subjects {
         let mut problems: Vec<String> = Vec::new();
         for temp in templates.iter() {
