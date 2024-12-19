@@ -43,17 +43,16 @@ pub fn parse_args(args: Vec<String>) -> Result<(PathBuf, String, bool), Box<dyn 
     };
     let recurse = match args.get(3) {
         None => true,
-        Some(dir) => !dir.eq("norecurse")
+        Some(dir) => !dir.eq("norecurse"),
     };
     Ok((dir_path, ext, recurse))
 }
-
 
 /// Returns all file paths in the passed directory with the required extension type
 pub fn read_dir_files(
     dir_path: &PathBuf,
     extension_type: &str,
-    recurse: bool
+    recurse: bool,
 ) -> Result<Vec<PathBuf>, Box<dyn Error>> {
     let mut app_files = vec![];
     for entry in fs::read_dir(dir_path)? {

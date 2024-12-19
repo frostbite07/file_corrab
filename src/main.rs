@@ -27,7 +27,8 @@ use crate::templates::get_templates;
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (dir_path, ext, recurse) = parse_args(std::env::args().collect())?;
     let templates = get_templates(&ext).expect("no templates found in /cfg");
-    let subjects = read_dir_files(&dir_path, &ext, recurse).expect("no target files matching extension");
+    let subjects =
+        read_dir_files(&dir_path, &ext, recurse).expect("no target files matching extension");
     for sub in subjects {
         let mut problems: Vec<String> = Vec::new();
         for temp in templates.iter() {
